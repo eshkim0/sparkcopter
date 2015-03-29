@@ -1,7 +1,8 @@
 #include "Logger.h"
-#include "MPU6050.h"
 #include "Motor.h"
 #include "UserInput.h"
+
+#include "MPU6050.h"
 
 // Constants
 #define USER_INPUT_UDP_PORT     5556
@@ -11,7 +12,7 @@
 #define MOTOR_PIN_BACK_RIGHT    A1
 
 // Sensor inputs
-MPU6050 *sensors = new MPU6050();
+MPU6050 mpu;
 
 // Motors
 Motor *motorFrontLeft = new Motor(MOTOR_PIN_FRONT_LEFT);
@@ -50,7 +51,7 @@ void setup() {
     userInput->move = &move;
 
     // Initialize sensors
-    sensors->init();
+    mpu.initialize();
 
     // Spin up all motors for testing
     motorFrontLeft->setSpeed(255);
@@ -68,11 +69,10 @@ void loop() {
     userInput->read();
 
     // Read sensors
-    float accelX, accelY, accelZ, gyroX, gyroY, gyroZ;
-    sensors->getMotion(&accelX, &accelY, &accelZ, &gyroX, &gyroY, &gyroZ);
-    /*Logger::log("Accel: x=%f y=%f z=%f", accelX, accelY, accelZ);*/
-    /*Logger::log("Gyro: x=%f y=%f z=%f", gyroX, gyroY, gyroZ);*/
-
+    int16_t accelX, accelY, accelZ, gyroX, gyroY, gyroZ;
+    mpu.getMotion6(&accelX, &accelY, &accelZ, &gyroX, &gyroY, &gyroZ);
+    Logger::log("Accel: x=%d y=%d z=%d", accelX, accelY, accelZ);
+    Logger::log("Gyro: x=%d y=%d z=%d", gyroX, gyroY, gyroZ);
 
     delay(10);
 }
